@@ -34,16 +34,13 @@ Java 8 拉姆达表达式
 
 #### λ 演算
 λ 演算是数理逻辑中的一个形式系统，在函数抽象和应用的基础上，使用变量绑定和替换来表达计算。讨论 λ 演算离不开形式化的表达。在本文中，我们尽量集中在与编程相关的基本概念上，而不拘泥于数学上的形式化表示。λ 演算实际上是对前面提到的函数概念的简化，方便以系统的方式来研究函数。λ 演算的函数有两个重要特征：
-
 - λ 演算中的函数都是匿名的，没有显式的名称。比如函数 sum(x, y) = x + y 可以写成 (x, y)|-> x + y。由于函数本身仅由其映射关系来确定，函数名称实际上并没有意义。因此使用匿名函数是合理的。
-
 - λ演算中的函数都只有一个输入。有多个输入的函数可以转换成多个只包含一个输入的函数的嵌套调用。这个过程就是通常所说的柯里化（currying）。如 (x, y)|-> x + y 可以转换成 x |-> (y |-> x + y)。右边的函数的返回值是另外一个函数。这一限定简化了λ演算的定义。
 
 对函数简化之后，就可以开始定义 λ 演算。λ 演算是基于 λ 项（λ-term）的语言。λ 项是 λ 演算的基本单元。λ 演算在 λ 项上定义了各种转换规则。
 
 ##### λ项
 λ 项由下面 3 个规则来定义：
-
 - 一个变量 x 本身就是一个 λ 项。
 - 如果 M 是 λ 项，x 是一个变量，那么 (λx.M) 也是一个 λ 项。这样的 λ 项称为 λ 抽象（abstraction）。x 和 M 中间的点（.）用来分隔函数参数和内容。
 - 如果 M 和 N 都是 λ 项，那么 (MN) 也是一个 λ 项。这样的λ项称为应用（application）。
@@ -56,13 +53,11 @@ Java 8 拉姆达表达式
 在 λ 抽象中，如果变量 x 出现在表达式中，那么该变量被绑定。表达式中绑定变量之外的其他变量称为自由变量。我们可以用函数的方式来分别定义绑定变量（bound variable，BV）和自由变量（free variable，FV）。
 
 对绑定变量来说：
-
 - 对变量 x 来说，BV(x) = ∅。也就是说，一个单独的变量是自由的。
 - 对 λ 项 M 和变量 x 来说，BV(λx.M) = BV(M) ∪ { x }。也就是说，λ 抽象在 M 中已有的绑定变量的基础上，额外绑定了变量 x。
 - 对 λ 项 M 和λ项 N 来说，BV(MN) = BV(M) ∪ BV(N)。也就是说，λ 项的应用结果中的绑定变量的集合是各自 λ 项的绑定变量集合的并集。
 
 对自由变量来说，相应的定义和绑定变量是相反的：
-
 - 对变量 x 来说，FV(x) = { x }。
 - 对 λ M 和变量 x 来说，FV(λx.M) = FV(M) − { x }。
 - 对 λ 项 M 和 λ 项 N 来说，FV(MN) = FV(M) ∪ FV(N)。
@@ -80,23 +75,18 @@ Java 8 拉姆达表达式
 对 λ 抽象进行 α 变换时，只能替换那些绑定到当前 λ 抽象上的变量。如 λ 抽象 λx.λx.x 可以 α 变换为 λx.λy.y 或 λy.λx.x，但是不能变换为 λy.λx.y，因为两者的语义是不同的。λx.x 表示的是恒等函数。λx.λx.x 和 λy.λx.x 都是表示返回恒等函数的 λ 抽象，因此它们是 α 等价的。而 λx.y 表示的不再是恒等函数，因此 λy.λx.y 与 λx.λy.y 和 λy.λx.x 都不是 α 等价的。
 
 ###### β 约简
-β 约简（β-reduction）与函数应用相关。在讨论 β 约简之前，需要先介绍替换的概念。对于 λ 项 M 来说，M[x := N] 表示把 λ 项 M 中变量 x 的自由出现替换成 N。具体的替换规则如下所示。A、B 和 M 是 λ 项，而 x 和 y 是变量。A ≡ B 表示两个 λ 项是相等的。
+β 约简（β-reduction）与函数应用相关。在讨论 β 约简之前，需要先介绍替换的概念。对于 λ 项 M 来说，M\[x := N] 表示把 λ 项 M 中变量 x 的自由出现替换成 N。具体的替换规则如下所示。A、B 和 M 是 λ 项，而 x 和 y 是变量。A ≡ B 表示两个 λ 项是相等的。
+- x\[x := M] ≡ M：直接替换一个变量 x 的结果是用来进行替换的 λ 项 M。
+- y\[x := M] ≡ y（x ≠ y）：y 是与 x 不同的变量，因此替换 x 并不会影响 y，替换结果仍然为 y。
+- (AB)\[x := M] ≡ (A\[x := M]B\[x := M])：A 和 B 都是 λ 项，(AB) 是 λ 项的应用。对 λ 项的应用进行替换，相当于替换之后再进行应用。
+- (λx.A)\[x := M] ≡ λx.A：这条规则针对 λ 抽象。如果 x 是 λ 抽象的绑定变量，那么不需要对 x 进行替换，得到的结果与之前的 λ 抽象相同。这是因为替换只是针对 M 中 x 的自由出现，如果 x 在 M 中是不自由的，那么替换就不需要进行。
+- (λy.A)\[x := M] ≡ λy.A\[x := M]（x ≠ y 并且 y ∉ FV(M)）：这条规则也是针对λ抽象。λ 项 A 的绑定变量是 y，不同于要替换的 x，因此可以在 A 中进行替换动作。
 
-- x[x := M] ≡ M：直接替换一个变量 x 的结果是用来进行替换的 λ 项 M。
-
-- y[x := M] ≡ y（x ≠ y）：y 是与 x 不同的变量，因此替换 x 并不会影响 y，替换结果仍然为 y。
-
-- (AB)[x := M] ≡ (A[x := M]B[x := M])：A 和 B 都是 λ 项，(AB) 是 λ 项的应用。对 λ 项的应用进行替换，相当于替换之后再进行应用。
-
-- (λx.A)[x := M] ≡ λx.A：这条规则针对 λ 抽象。如果 x 是 λ 抽象的绑定变量，那么不需要对 x 进行替换，得到的结果与之前的 λ 抽象相同。这是因为替换只是针对 M 中 x 的自由出现，如果 x 在 M 中是不自由的，那么替换就不需要进行。
-
-- (λy.A)[x := M] ≡ λy.A[x := M]（x ≠ y 并且 y ∉ FV(M)）：这条规则也是针对λ抽象。λ 项 A 的绑定变量是 y，不同于要替换的 x，因此可以在 A 中进行替换动作。
-
-在进行替换之前，可能需要先使用 α 变换来改变绑定变量的名称。比如，在进行替换 (λx.y)[y := x] 时，不能直接把出现的 y 替换成 x。这样就改变了之前的 λ 抽象的语义。正确的做法是先进行 α 变换，把 λx.y 替换成 λz.y，再进行替换，得到的结果是 λz.x。
+在进行替换之前，可能需要先使用 α 变换来改变绑定变量的名称。比如，在进行替换 (λx.y)\[y := x] 时，不能直接把出现的 y 替换成 x。这样就改变了之前的 λ 抽象的语义。正确的做法是先进行 α 变换，把 λx.y 替换成 λz.y，再进行替换，得到的结果是 λz.x。
 
 替换的基本原则是要求在替换完成之后，原来的自由变量仍然是自由的。如果替换变量可能导致一个变量从自由变成绑定，需要首先进行 α 变换。在之前的例子中，λx.y 中的 x 是自由变量，而直接替换的结果 λx.x 把 x 变成了绑定变量，因此 α 变换是必须的。在正确的替换结果 λz.x 中，z 仍然是自由的。
 
-β 约简用替换来表示函数应用。对 ((λV.E) E′) 进行 β 约简的结果就是 E[V := E′]。如 ((λx.x+1)y) 进行 β 约简的结果是 (x+1)[x := y]，也就是 y+1。
+β 约简用替换来表示函数应用。对 ((λV.E) E′) 进行 β 约简的结果就是 E\[V := E′]。如 ((λx.x+1)y) 进行 β 约简的结果是 (x+1)\[x := y]，也就是 y+1。
 
 ###### η 变换
 η 变换（η-conversion）描述函数的外延性（extensionality）。外延性指的是如果两个函数当且仅当对所有参数的结果相同时，才被认为是相等的。比如一个函数 F，当参数为 x 时，它的返回值是 Fx。那么考虑声明为 λy.Fy 的函数 G。函数 G 对于输入参数 x，同样返回结果 Fx。F 和 G 可能由不同的 λ 项组成，但是只要 Fx=Gx 对所有的 x 都成立，那么 F 和 G 是相等的。
@@ -105,7 +95,6 @@ Java 8 拉姆达表达式
 
 ### 纯函数、副作用和引用透明性
 了解函数式编程的人可能听说过纯函数和副作用等名称。这两个概念与引用透明性紧密相关。纯函数需要具备两个特征：
-
 - 对于相同的输入参数，总是返回相同的值。
 - 求值过程中不产生副作用，也就是不会对运行环境产生影响。
 
@@ -114,24 +103,23 @@ Java 8 拉姆达表达式
 在清单 1 中，方法 f1 是纯函数；方法 f2 不是纯函数，因为引用了外部变量 y；方法 f3 不是纯函数，因为使用了调用了产生副作用的 Counter 对象的 inc 方法；方法 f4 不是纯函数，因为调用 writeFile 方法会写入文件，从而对外部环境造成影响。
 
 清单 1. 纯函数和非纯函数示例
-
 ```
 int f1(int x) {
-  return x + 1;
+    return x + 1;
 }
  
 int f2(int x) {
-  return x + y;
+    return x + y;
 }
  
 int f3(Counter c) {
-  c.inc();
-  return 0;
+    c.inc();
+    return 0;
 }
  
 int f4(int x) {
-  writeFile();
-  return 1;
+    writeFile();
+    return 1;
 }
 ```
 
@@ -145,11 +133,8 @@ int f4(int x) {
 
 ### 参考资源
 - 参考[维基百科](https://en.wikipedia.org/wiki/Functional_programming)中关于 Functional Programming 的介绍。
-
 - 参考[维基百科](https://en.wikipedia.org/wiki/Lambda_calculus)中关于 λ 演算的内容。
-
 - 查看斯坦福大学哲学百科中关于 λ 演算的[条目](https://plato.stanford.edu/entries/lambda-calculus/)。
-
 - 了解更多关于[函数](https://en.wikipedia.org/wiki/Function_(mathematics))的内容。
 
 
@@ -168,9 +153,9 @@ int f4(int x) {
 ```
 int maxMark = 0;
 for (Student student : students) {
-  if (student.getMark() > maxMark) {
-    maxMark = student.getMark();
-  }
+    if (student.getMark() > maxMark) {
+        maxMark = student.getMark();
+    }
 }
 ```
 
@@ -180,14 +165,13 @@ for (Student student : students) {
 ```
 BigDecimal total = BigDecimal.ZERO;
 for (LineItem item : order.getLineItems()) {
-   total = total.add(item.getPrice().multiply(new BigDecimal(item.getCount())));
+    total = total.add(item.getPrice().multiply(new BigDecimal(item.getCount())));
 }
 ```
 
 在面向对象编程的实现中，这两段代码会分别添加到课程和订单所对应的类的某个方法中。课程对应的类 Course 会有一个方法叫 getMaxMark，而订单对应的类 Order 会有一个方法叫 getTotal。尽管在实现上存在很多相似性和重复代码，由于课程和订单是两个完全不相关的概念，并没有办法通过面向对象中的继承或组合机制来提高代码复用和减少重复。而函数式编程可以很好地解决这个问题。
 
 我们来进一步看一下清单 1 和清单 2 中的代码，尝试提取其中的计算模式。该计算模式由 3 个部分组成：
-
 - 保存计算结果的状态，有初始值。
 - 遍历操作。
 - 遍历时进行的计算，更新保存计算结果的状态值。
@@ -197,11 +181,11 @@ for (LineItem item : order.getLineItems()) {
 清单 3. 计算模式的伪代码
 ```
 function(iterable, updateValue, initialValue) {
-  value = initialValue
-  loop(iterable) {
-      value = updateValue(value, currentValue)
-  }
-  return value
+    value = initialValue
+    loop(iterable) {
+        value = updateValue(value, currentValue)
+    }
+    return value
 }
 ```
 
@@ -210,12 +194,11 @@ function(iterable, updateValue, initialValue) {
 清单 4. 使用 reduce 函数改写代码
 ```
 reduce(students, (mark, student) -> {
-   return Math.max(student.getMark(), mark);
+    return Math.max(student.getMark(), mark);
 }, 0);
  
 reduce(order.lineItems, (total, item) -> {
-   return total.add(item.getPrice().multiply(new 
-BigDecimal(item.getCount())))
+    return total.add(item.getPrice().multiply(new BigDecimal(item.getCount())))
 }, BigDecimal.ZERO);
 ```
 
@@ -223,7 +206,6 @@ BigDecimal(item.getCount())))
 对函数式编程支持程度高低的一个重要特征是函数是否作为编程语言的一等公民出现，也就是编程语言是否有内置的结构来表示函数。作为面向对象的编程语言，Java 中使用接口来表示函数。直到 Java 8，Java 才提供了内置标准 API 来表示函数，也就是 java.util.function 包。Function<T, R> 表示接受一个参数的函数，输入类型为 T，输出类型为 R。Function 接口只包含一个抽象方法 R apply(T t)，也就是在类型为 T 的输入 t 上应用该函数，得到类型为 R 的输出。除了接受一个参数的 Function 之外，还有接受两个参数的接口 BiFunction<T, U, R>，T 和 U 分别是两个参数的类型，R 是输出类型。BiFunction 接口的抽象方法为 R apply(T t, U u)。超过 2 个参数的函数在 Java 标准库中并没有定义。如果函数需要 3 个或更多的参数，可以使用第三方库，如 Vavr 中的 Function0 到 Function8。
 
 除了 Function 和 BiFunction 之外，Java 标准库还提供了几种特殊类型的函数：
-
 - Consumer<T>：接受一个输入，没有输出。抽象方法为 void accept(T t)。
 - Supplier<T>：没有输入，一个输出。抽象方法为 T get()。
 - Predicate<T>：接受一个输入，输出为 boolean 类型。抽象方法为 boolean test(T t)。
@@ -259,11 +241,11 @@ public class HighOrderFunctions {
 清单 6. 部分函数示例
 ```
 function f(a, b, c) {
-  return a + b + c;
+    return a + b + c;
 }
 ​
 function fa(b, c) {
-  return f(1, b, c);
+    return f(1, b, c);
 }
 ```
 
@@ -274,27 +256,21 @@ Java 标准库并没有提供对部分函数的支持，而且由于只提供了
 清单 7. 部分函数的 Java 实现
 ```
 public class PartialFunctions {
-  private static  <T, U, R> Function<U, R> partialLeft(BiFunction<T, 
-U, R> biFunction, T t) {
-   return (u) -> biFunction.apply(t, u);
-  }
+    private static  <T, U, R> Function<U, R> partialLeft(BiFunction<T, U, R> biFunction, T t) {
+        return (u) -> biFunction.apply(t, u);
+    }
 ​
-  private static  <T, U, R> Function<T, R> partialRight(BiFunction<T, 
-U, R> biFunction, U u) {
-   return (t) -> biFunction.apply(t, u);
-  }
+    private static  <T, U, R> Function<T, R> partialRight(BiFunction<T, U, R> biFunction, U u) {
+        return (t) -> biFunction.apply(t, u);
+    }
 ​
-​
-  public static void main(String[] args) {
-    BiFunction<Integer, Integer, Integer> biFunction = (v1, v2) -> v1 
-- v2;
-    Function<Integer, Integer> subtractFrom10 = 
-partialLeft(biFunction, 10);
-    Function<Integer, Integer> subtractBy10 = partialRight(biFunction, 
-10);
-    System.out.println(subtractFrom10.apply(5)); // 5
-    System.out.println(subtractBy10.apply(5));   // -5
-  }
+    public static void main(String[] args) {
+        BiFunction<Integer, Integer, Integer> biFunction = (v1, v2) -> v1 - v2;
+        Function<Integer, Integer> subtractFrom10 = partialLeft(biFunction, 10);
+        Function<Integer, Integer> subtractBy10 = partialRight(biFunction, 10);
+        System.out.println(subtractFrom10.apply(5)); // 5
+        System.out.println(subtractBy10.apply(5));   // -5
+    }
 }
 ```
 
@@ -315,10 +291,10 @@ partialLeft(biFunction, 10);
 清单 8. JavaScript 中的闭包示例
 ```
 function idGenerator(initialValue) {
-let count = initialValue;
-return function() {
-       return count++;
-};
+    let count = initialValue;
+    return function() {
+        return count++;
+    };
 }
 ​
 let genId = idGenerator(0);
@@ -327,7 +303,6 @@ genId(); // 1
 ```
 
 从上述简单的例子中，可以得出来构成闭包的两个要件：
-
 - 一个函数
 - 负责绑定自由变量的上下文环境
 
@@ -344,20 +319,20 @@ genId(); // 1
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <title>Test</title>
+    <title>Test</title>
 </head>
 <body>
-   <button>Button 1</button>
-   <button>Button 2</button>
-   <button>Button 3</button>
+    <button>Button 1</button>
+    <button>Button 2</button>
+    <button>Button 3</button>
 </body>
 <script>
-   var buttons = document.getElementsByTagName("button");
-   for (var i = 0; i < buttons.length; i++) {          
-     buttons[i].addEventListener("click", function() {
-       alert(i);              
-     });
-   }
+    var buttons = document.getElementsByTagName("button");
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].addEventListener("click", function() {
+        alert(i);
+        });
+    }
 </script>
 </html>
 ```
@@ -368,10 +343,10 @@ genId(); // 1
 ```
 var buttons = document.getElementsByTagName("button");
 for (var i = 0; i < buttons.length; i++) {          
-   buttons[i].addEventListener("click", function(i) {
-      return function() {
-        alert(i);              
-      }
+    buttons[i].addEventListener("click", function(i) {
+        return function() {
+            alert(i);
+        }
     }(i));
 }
 ```
@@ -382,38 +357,37 @@ for (var i = 0; i < buttons.length; i++) {
 ```
 public class InnerClasses {
 ​
-  public static void main(String[] args) {
-    final CountDownLatch latch = new CountDownLatch(1);
+    public static void main(String[] args) {
+        final CountDownLatch latch = new CountDownLatch(1);
 ​
-    final Future<?> task1 = ForkJoinPool.commonPool().submit(() -> {
-      try {
-        Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } finally {
-        latch.countDown();
-      }
-    });
+        final Future<?> task1 = ForkJoinPool.commonPool().submit(() -> {
+            try {
+                Thread.sleep(ThreadLocalRandom.current().nextInt(2000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
+            }
+        });
 ​
-    final Future<?> task2 = ForkJoinPool.commonPool().submit(() -> {
-      final long start = System.currentTimeMillis();
-      try {
-        latch.await();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } finally {
-        System.out.println("Done after " + (System.currentTimeMillis() 
-- start) + "ms");
-      }
-    });
+        final Future<?> task2 = ForkJoinPool.commonPool().submit(() -> {
+            final long start = System.currentTimeMillis();
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                System.out.println("Done after " + (System.currentTimeMillis() - start) + "ms");
+            }
+        });
 ​
-    try {
-      task1.get();
-      task2.get();
-    } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
+        try {
+            task1.get();
+            task2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
-  }
 }
 ```
 
@@ -427,11 +401,11 @@ public class InnerClasses {
 清单 12. 递归方式计算阶乘
 ```
 int fact(n) {
-  if (n === 0) {
-      return 1;
-  } else {
-      return n * fact(n - 1);
-  }
+    if (n === 0) {
+        return 1;
+    } else {
+        return n * fact(n - 1);
+    }
 }
 ```
 
@@ -440,11 +414,11 @@ int fact(n) {
 清单 13. 循环方式计算阶乘
 ```
 int fact_i(n) {
-   let result = 1;
-   for (let i = n; i > 0; i--) {
-     result = result * i;
-   }
-   return result;
+    let result = 1;
+    for (let i = n; i > 0; i--) {
+        result = result * i;
+    }
+    return result;
 }
 ```
 
@@ -455,10 +429,10 @@ int fact_i(n) {
 清单 14. 尾递归的方式实现欧几里德算法
 ```
 int gcd(x, y) {
-   if (y == 0) {
-      return x;
-   }
-   return gcd(y, x % y);
+    if (y == 0) {
+        return x;
+    }
+    return gcd(y, x % y);
 }
 ```
 
@@ -475,18 +449,18 @@ import java.math.BigInteger;
  
 public class Fib {
  
- public static void main(String[] args) {
-   System.out.println(fib(40));
- }
+    public static void main(String[] args) {
+        System.out.println(fib(40));
+    }
  
- private static BigInteger fib(int n) {
-   if (n == 0) {
-     return BigInteger.ZERO;
-   } else if (n == 1) {
-     return BigInteger.ONE;
-   }
-   return fib(n - 1).add(fib(n - 2));
- }
+    private static BigInteger fib(int n) {
+        if (n == 0) {
+            return BigInteger.ZERO;
+        } else if (n == 1) {
+            return BigInteger.ONE;
+        }
+        return fib(n - 1).add(fib(n - 2));
+    }
 }
 ```
 
@@ -500,27 +474,26 @@ import java.util.Map;
  
 public class FibMemoized {
  
- public static void main(String[] args) {
-   System.out.println(fib(100));
- }
+    public static void main(String[] args) {
+        System.out.println(fib(100));
+    }
  
- private static Map<Integer, BigInteger> lookupTable = new 
-HashMap<>();
+    private static Map<Integer, BigInteger> lookupTable = new HashMap<>();
  
- static {
-   lookupTable.put(0, BigInteger.ZERO);
-   lookupTable.put(1, BigInteger.ONE);
- }
+    static {
+        lookupTable.put(0, BigInteger.ZERO);
+        lookupTable.put(1, BigInteger.ONE);
+    }
  
- private static BigInteger fib(int n) {
-   if (lookupTable.containsKey(n)) {
-     return lookupTable.get(n);
-   } else {
-     BigInteger result = fib(n - 1).add(fib(n - 2));
-     lookupTable.put(n, result);
-     return result;
-   }
- }
+    private static BigInteger fib(int n) {
+        if (lookupTable.containsKey(n)) {
+            return lookupTable.get(n);
+        } else {
+            BigInteger result = fib(n - 1).add(fib(n - 2));
+            lookupTable.put(n, result);
+            return result;
+        }
+    }
 }
 ```
 
@@ -548,13 +521,13 @@ HashMap<>();
 清单 1. 传统的启动线程的方式
 ```
 public class OldThread {
- public static void main(String[] args) {
-   new Thread(new Runnable() {
-     public void run() {
-       System.out.println("Hello World!");
-     }
-   }).start();
- }
+    public static void main(String[] args) {
+        new Thread(new Runnable() {
+            public void run() {
+                System.out.println("Hello World!");
+            }
+        }).start();
+    }
 }
 ```
 
@@ -563,9 +536,9 @@ public class OldThread {
 清单 2. 使用 Lambda 表 达式启动线程
 ```
 public class LambdaThread {
-  public static void main(String[] args) {
-    new Thread(() -> System.out.println("Hello World!")).start();
-  }
+    public static void main(String[] args) {
+        new Thread(() -> System.out.println("Hello World!")).start();
+    }
 }
 ```
 
@@ -587,31 +560,31 @@ Lambda 表达式的语法很灵活。它们的声明方式类似 Java 中的方�
 ```
 public class LambdaTargetType {
 
-  @FunctionalInterface
-  interface A {
-    void a();
-  }
-
-  @FunctionalInterface
-  interface B {
-    void b();
-  }
-
-  class UseAB {
-    void use(A a) {
-      System.out.println("Use A");
+    @FunctionalInterface
+    interface A {
+        void a();
     }
 
-    void use(B b) {
-      System.out.println("Use B");
+    @FunctionalInterface
+    interface B {
+        void b();
     }
-  }
 
-  void targetType() {
-    UseAB useAB = new UseAB();
-    A a = () -> System.out.println("Use");
-    useAB.use(a);
-  }
+    class UseAB {
+        void use(A a) {
+            System.out.println("Use A");
+        }
+
+        void use(B b) {
+            System.out.println("Use B");
+        }
+    }
+
+    void targetType() {
+        UseAB useAB = new UseAB();
+        A a = () -> System.out.println("Use");
+        useAB.use(a);
+    }
 }
 ```
 
@@ -621,8 +594,8 @@ public class LambdaTargetType {
 清单 4. Lambda 表 达式中的名称解析
 ```
 public void run() {
-  String name = "Alex";
-  new Thread(() -> System.out.println("Hello, " + name)).start();
+    String name = "Alex";
+    new Thread(() -> System.out.println("Hello, " + name)).start();
 }
 ```
 
@@ -641,7 +614,6 @@ Java 8 中的流表示的是元素的序列。流中的元素可能是对象、i
 所有的流都是从 Spliterator 创建出来的。Spliterator 的名称来源于它所支持的两种操作：split 和 iterator。Spliterator 可以看成是 Iterator 的并行版本，允许通过对流中元素分片的方式来切分数据源。使用其 tryAdvance 方法来顺序遍历元素，也可以使用 trySplit 方法来创建一个新的 Spliterator 对象在新划分的数据集上工作。Spliterator 还提供了 forEachRemaining 方法进行批量顺序遍历。可以使用 estimateSize 方法来查询可能会遍历的元素数量。一般的做法是先使用 trySplit 切分数据源。当元素数量足够小时，使用 forEachRemaining 来对分片中的全部元素进行处理。这也是典型的分治法的思路。
 
 每个 Spliterator 可以有一系列不同的特征，可以通过 characteristics 方法来查询。一个 Spliterator 具备的特征取决于其数据源和元素。所有可用的特征如下所示：
-
 - CONCURRENT：表明数据源可以安全地由多个线程进行修改，而无需额外的同步机制。
 - DISTINCT：表明数据源中的元素是唯一的，不存在重复元素。
 - IMMUTABLE：表明数据源是不可变的， 无法进行修改操作。
@@ -655,7 +627,6 @@ Spliterator 需要绑定到流之后才能遍历其中的元素。不同的 Spli
 
 #### 有状态和无状态操作
 流操作可以是有状态或无状态的。当一个有状态的操作在处理一个元素时，它可能需要使用处理之前的元素时保留的信息；无状态的操作可以独立处理每个元素，举例来说：
-
 - distinct 和 sorted 是有状态操作的例子。distinct 操作从流中删除重复元素，它需要记录下之前已经遇到过的元素来确定当前元素是否应该被删除。sorted 操作对流进行排序，它需要知道所有元素来确定当前元素在排序之后的所在位置。
 - filter 和 map 是无状态操作的例子。filter 操作在进行过滤时只需要看当前元素即可。map 操作可以独立转换当前元素。一般来说，有状态操作的运行代价要高于无状态操作，因为需要额外的空间保存中间状态信息。
 
@@ -663,7 +634,6 @@ Stream<T> 是表示流的接口，T 是流中元素的类型。对于原始类�
 
 #### 流水线
 在对流进行处理时，不同的流操作以级联的方式形成处理流水线。一个流水线由一个源（source），0 到多个中间操作（intermediate operation）和一个终结操作（terminal operation）完成。
-
 - 源：源是流中元素的来源。Java 提供了很多内置的源，包括数组、集合、生成函数和 I/O 通道等。
 - 中间操作：中间操作在一个流上进行操作，返回结果是一个新的流。这些操作是延迟执行的。
 - 终结操作：终结操作遍历流来产生一个结果或是副作用。在一个流上执行终结操作之后，该流被消费，无法再次被消费。
@@ -676,13 +646,11 @@ Java 8 支持从不同的源中创建流。Stream.of 方法可以使用给定的
 清单 5. 从数组中创建流
 ```
 Arrays.stream(new String[] {"Hello", "World"})
-.forEach(System.out::println);
-// 输出"Hello\nWorld"到控制台
+        .forEach(System.out::println);  // 输出"Hello\nWorld"到控制台
 
 int sum = Arrays.stream(new int[] {1, 2, 3})
-.reduce((a, b) -> a + b)
-.getAsInt();
-// "sum"的值是"6"
+                .reduce((a, b) -> a + b)
+                .getAsInt();    // "sum"的值是"6"
 ```
 
 接口 Collection 的默认方法 stream() 和 parallelStream() 可以分别从集合中创建顺序流和并行流，如清单 6 所示。
@@ -693,13 +661,11 @@ List<String> list = new ArrayList<>();
 list.add("Hello");
 list.add("World");
 list.stream()
-.forEach(System.out::println);
-// 输出 Hello 和 World
+    .forEach(System.out::println);  // 输出 Hello 和 World
 ```
 
 #### 中间操作
 流中间操作在应用到流上，返回一个新的流。下面列出了常用的流中间操作：
-
 - map：通过一个 Function 把一个元素类型为 T 的流转换成元素类型为 R 的流。
 - flatMap：通过一个 Function 把一个元素类型为 T 的流中的每个元素转换成一个元素类型为 R 的流，再把这些转换之后的流合并。
 - filter：过滤流中的元素，只保留满足由 Predicate 所指定的条件的元素。
@@ -718,14 +684,12 @@ list.stream()
 Stream.of(1, 2, 3)
     .map(v -> v + 1)
     .flatMap(v -> Stream.of(v * 5, v * 10))
-    .forEach(System.out::println);
-//输出 10，20，15，30，20，40
+    .forEach(System.out::println);  //输出 10，20，15，30，20，40
 
 Stream.of(1, 2, 3)
     .takeWhile(v -> v <  3)
     .dropWhile(v -> v <  2)
-    .forEach(System.out::println);
-//输出 2
+    .forEach(System.out::println);  //输出 2
 ```
 
 #### 终结操作
@@ -734,7 +698,6 @@ Stream.of(1, 2, 3)
 forEach 和 forEachOrdered 对流中的每个元素执行由 Consumer 给定的实现。在使用 forEach 时，并没有确定的处理元素的顺序；forEachOrdered 则按照流的相遇顺序来处理元素，如果流有确定的相遇顺序的话。
 
 reduce 操作把一个流约简成单个结果。约简操作可以有 3 个部分组成：
-
 - 初始值：在对元素为空的流进行约简操作时，返回值为初始值。
 - 叠加器：接受 2 个参数的 BiFunction。第一个参数是当前的约简值，第二个参数是当前元素，返回结果是新的约简值。
 - 合并器：对于并行流来说，约简操作可能在流的不同部分上并行执行。合并器用来把部分约简结果合并为最终的结果。
@@ -744,19 +707,16 @@ reduce 操作把一个流约简成单个结果。约简操作可以有 3 个部�
 清单 8. reduce 操 作示例
 ```
 Stream.of(1, 2, 3).reduce((v1, v2) -> v1 + v2)
-    .ifPresent(System.out::println);
-// 输出 6
+    .ifPresent(System.out::println);    // 输出 6
 
 int result1 = Stream.of(1, 2, 3, 4, 5)
     .reduce(1, (v1, v2) -> v1 * v2);
-System.out.println(result1);
-// 输出 120
+System.out.println(result1);    // 输出 120
 
 int result2 = Stream.of(1, 2, 3, 4, 5)
     .parallel()
     .reduce(0, (v1, v2) -> v1 + v2, (v1, v2) -> v1 + v2);
-System.out.println(result2);
-// 输出 15
+System.out.println(result2);    // 输出 15
 ```
 
 Max 和 min 是两种特殊的约简操作，分别求得流中元素的最大值和最小值。
@@ -781,7 +741,7 @@ System.out.println(names);
 清单 10. 收集器 joining 示 例
 ```
 String str = Stream.of("a", "b", "c")
-   .collect(Collectors.joining(", "));
+    .collect(Collectors.joining(", "));
 System.out.println(str);
 ```
 
@@ -851,8 +811,7 @@ Vavr 的函数支持一些常见特征。
 
 清单 2. 函数的组合
 ```
-Function3< Integer, Integer, Integer, Integer> function3 = (v1, v2, v3)
--> (v1 + v2) * v3;
+Function3< Integer, Integer, Integer, Integer> function3 = (v1, v2, v3) -> (v1 + v2) * v3;
 Function3< Integer, Integer, Integer, Integer> composed =
 function3.andThen(v -> v * 100);
 int result = composed.apply(1, 2, 3);
@@ -871,8 +830,7 @@ System.out.println(str);
 
 清单 3. 函数的部分应用
 ```
-Function4< Integer, Integer, Integer, Integer, Integer> function4 =
-(v1, v2, v3, v4) -> (v1 + v2) * (v3 + v4);
+Function4< Integer, Integer, Integer, Integer, Integer> function4 = (v1, v2, v3, v4) -> (v1 + v2) * (v3 + v4);
 Function2< Integer, Integer, Integer> function2 = function4.apply(1, 2);
 int result = function2.apply(4, 5);
 System.out.println(result);
@@ -884,10 +842,8 @@ System.out.println(result);
 
 清单 4. 函数的柯里化
 ```
-Function3<Integer, Integer, Integer, Integer> function3 = (v1, v2, v3)
--> (v1 + v2) * v3;
-int result =
-function3.curried().apply(1).curried().apply(2).curried().apply(3);
+Function3<Integer, Integer, Integer, Integer> function3 = (v1, v2, v3) -> (v1 + v2) * v3;
+int result = function3.curried().apply(1).curried().apply(2).curried().apply(3);
 System.out.println(result);
 ```
 
@@ -935,21 +891,20 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Eithers {
 
-  private static ThreadLocalRandom random =
-ThreadLocalRandom.current();
+    private static ThreadLocalRandom random = ThreadLocalRandom.current();
 
-  public static void main(String[] args) {
-    Either<String, String> either = compute()
-        .map(str -> str + " World")
-        .mapLeft(Throwable::getMessage);
-    System.out.println(either);
-  }
+    public static void main(String[] args) {
+        Either<String, String> either = compute()
+            .map(str -> str + " World")
+            .mapLeft(Throwable::getMessage);
+        System.out.println(either);
+    }
 
-  private static Either<Throwable, String> compute() {
-    return random.nextBoolean()
-        ? Either.left(new RuntimeException("Boom!"))
-        : Either.right("Hello");
-  }
+    private static Either<Throwable, String> compute() {
+        return random.nextBoolean()
+            ? Either.left(new RuntimeException("Boom!"))
+            : Either.right("Hello");
+    }
 }
 ```
 
@@ -1072,7 +1027,6 @@ Match(value).of(
 要解释 Monad，就必须提到范畴论（Category Theory）。范畴（category）本身是一个很简单的概念。一个范畴由对象（object）以及对象之间的箭头（arrow）组成。范畴的核心是组合，体现在箭头的组合性上。如果从对象 A 到对象 B 有一个箭头，从对象 B 到对象 C 也有一个箭头，那么必然有一个从对象 A 到对象 C 的箭头。从 A 到 C 的这个箭头，就是 A 到 B 的箭头和 B 到 C 的箭头的组合。这种组合的必然存在性，是范畴的核心特征。以专业术语来说，箭头被称为态射（morphisms）。范畴中对象和箭头的概念可以很容易地映射到函数中。类型可以作为范畴中的对象，把函数看成是箭头。如果有一个函数 f 的参数类型是 A，返回值类型是 B，那么这个函数是从 A 到 B 的态射；另外一个函数 g 的参数类型是 B，返回值类型是 C，这个函数是从 B 到 C 的态射。可以把 f 和 g 组合起来，得到一个新的从类型 A 到类型 C 的函数，记为 g ∘f，也就是从 A 到 C 的态射。这种函数的组合方式是必然存在的。
 
 一个范畴中的组合需要满足两个条件：
-
 - 组合必须是传递的（associative）。如果有 3 个态射 f、g 和 h 可以按照 h∘g∘f 的顺序组合，那么不管是 g 和 h 先组合，还是 f 和 g 先组合，所产生的结果都是一样的。
 - 对于每个对象 A，都有一个作为组合基本单元的箭头。这个箭头的起始和终止都是该对象 A 本身。当该箭头与从对象 A 起始或结束的其他箭头组合时，得到的结果是原始的箭头。以函数的概念来说，这个函数称为恒等函数（identity function）。在 Java 中，这个函数由 Function.identity() 表示。
 
@@ -1102,8 +1056,8 @@ Monad 本身也是一种 Functor。Monad 的目的在于描述副作用。
 int count = 0;
 
 int increase(int x) {
-  count++;
-  return x + 1;
+    count++;
+    return x + 1;
 }
 ```
 
@@ -1112,7 +1066,7 @@ int increase(int x) {
 清单 2. 转换之后的纯函数版本
 ```
 Tuple2<Integer, Integer> increase1(int x) {
-  return Tuple.of(x + 1, 1);
+    return Tuple.of(x + 1, 1);
 }
 ```
 
@@ -1131,12 +1085,12 @@ count += result._2;
 清单 4. 函数 decrease 及其纯函数版本
 ```
 int decrease(int x) {
-  count++;
-  return x - 1;
+    count++;
+    return x - 1;
 }
 
 Tuple2<Integer, Integer> decrease1(int x) {
-  return Tuple.of(x - 1, 1);
+    return Tuple.of(x - 1, 1);
 }
 ```
 
@@ -1149,11 +1103,11 @@ Tuple2<Integer, Integer> decrease1(int x) {
 Function<Integer, Tuple2<Integer, Integer>> compose(
     Function<Integer, Tuple2<Integer, Integer>> func1,
     Function<Integer, Tuple2<Integer, Integer>> func2) {
-  return x -> {
-    Tuple2<Integer, Integer> result1 = func1.apply(x);
-    Tuple2<Integer, Integer> result2 = func2.apply(result1._1);
-    return Tuple.of(result2._1, result1._2 + result2._2);
-  };
+    return x -> {
+        Tuple2<Integer, Integer> result1 = func1.apply(x);
+        Tuple2<Integer, Integer> result2 = func2.apply(result1._1);
+        return Tuple.of(result2._1, result1._2 + result2._2);
+    };
 }
 ```
 
@@ -1162,7 +1116,7 @@ Function<Integer, Tuple2<Integer, Integer>> compose(
 清单 6. 函数组合示例
 ```
 Tuple2<Integer, Integer> doCompose(int x) {
-  return compose(this::increase1, this::decrease1).apply(x);
+    return compose(this::increase1, this::decrease1).apply(x);
 }
 ```
 
@@ -1174,7 +1128,6 @@ Tuple2<Integer, Integer> doCompose(int x) {
 在对 Kleisli 范畴有了一个直观的了解之后，就可以对 Monad 给出一个形式化的定义。给定一个范畴 C 和 endofunctor m，与之相对应的 Kleisli 范畴中的对象与范畴 C 相同，但态射是不同的。K 中的两个对象 a 和 b 之间的态射，是由范畴 C 中的 a 到 m(b) 的态射来实现的。注意，Kleisli 范畴 K 中的态射箭头是从对象 a 到对象 b 的，而不是从对象 a 到 m(b)。如果存在一种传递的组合方式，并且每个对象都有组合单元箭头，也就是满足范畴的两大原则，那么这个 endofunctor m 就叫做 Monad。
 
 一个 Monad 的定义中包含了 3 个要素。在定义 Monad 时需要提供一个类型构造器 M 和两个操作 unit 和 bind：
-
 - 类型构造器的作用是从底层的类型中创建出一元类型（monadic type）。如果 M 是 Monad 的名称，而 t 是数据类型，则 M t 是对应的一元类型。
 - unit 操作把一个普通值 t 通过类型构造器封装在一个容器中，所产生的值的类型是 M t。unit 操作也称为 return 操作。return 操作的名称来源于 Haskell。不过由于 return 在很多编程语言中是保留关键词，用 unit 做名称更为合适。
 - bind 操作的类型声明是 (M t)→(t→M u)→(M u)。该操作接受类型为 M t 的值和类型为 t → M u 的函数来对值进行转换。在进行转换时，bind 操作把原始值从容器中抽取出来，再应用给定的函数进行转换。函数的返回值是一个新的容器值 M u。M u 可以作为下一次转换的起点。多个 bind 操作可以级联起来，形成处理流水线。
@@ -1192,54 +1145,48 @@ Tuple2<Integer, Integer> doCompose(int x) {
 ```
 public class LoggingMonad<T> {
 
-  private final T value;
-  private final List<String> logs;
+    private final T value;
+    private final List<String> logs;
 
-  public LoggingMonad(T value, List<String> logs) {
-    this.value = value;
-    this.logs = logs;
-  }
-
-  @Override
-  public String toString() {
-    return "LoggingMonad{" +
-        "value=" + value +
-        ", logs=" + logs +
-        '}';
-  }
-
-  public static <T> LoggingMonad<T> unit(T value) {
-    return new LoggingMonad<>(value, List.of());
-  }
-
-  public static <T1, T2> LoggingMonad<T2> bind(LoggingMonad<T1> input,
-      Function<T1, LoggingMonad<T2>> transform) {
-    final LoggingMonad<T2> result = transform.apply(input.value);
-    List<String> logs = new ArrayList<>(input.logs);
-    logs.addAll(result.logs);
-    return new LoggingMonad<>(result.value, logs);
-  }
-
-  public static <T> LoggingMonad<T> pipeline(LoggingMonad<T> monad,
-      List<Function<T, LoggingMonad<T>>> transforms) {
-    LoggingMonad<T> result = monad;
-    for (Function<T, LoggingMonad<T>> transform : transforms) {
-      result = bind(result, transform);
+    public LoggingMonad(T value, List<String> logs) {
+        this.value = value;
+        this.logs = logs;
     }
-    return result;
-  }
 
-  public static void main(String[] args) {
-    Function<Integer, LoggingMonad<Integer>> transform1 =
-        v -> new LoggingMonad<>(v * 4, List.of(v + " * 4"));
-    Function<Integer, LoggingMonad<Integer>> transform2 =
-        v -> new LoggingMonad<>(v / 2, List.of(v + " / 2"));
-    final LoggingMonad<Integer> result =
-pipeline(LoggingMonad.unit(8),
+    @Override
+    public String toString() {
+        return "LoggingMonad{" +
+            "value=" + value +
+            ", logs=" + logs +
+            '}';
+    }
+
+    public static <T> LoggingMonad<T> unit(T value) {
+        return new LoggingMonad<>(value, List.of());
+    }
+
+    public static <T1, T2> LoggingMonad<T2> bind(LoggingMonad<T1> input, Function<T1, LoggingMonad<T2>> transform) {
+        final LoggingMonad<T2> result = transform.apply(input.value);
+        List<String> logs = new ArrayList<>(input.logs);
+        logs.addAll(result.logs);
+        return new LoggingMonad<>(result.value, logs);
+    }
+
+    public static <T> LoggingMonad<T> pipeline(LoggingMonad<T> monad, List<Function<T, LoggingMonad<T>>> transforms) {
+        LoggingMonad<T> result = monad;
+        for (Function<T, LoggingMonad<T>> transform : transforms) {
+            result = bind(result, transform);
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Function<Integer, LoggingMonad<Integer>> transform1 = v -> new LoggingMonad<>(v * 4, List.of(v + " * 4"));
+        Function<Integer, LoggingMonad<Integer>> transform2 = v -> new LoggingMonad<>(v / 2, List.of(v + " / 2"));
+        final LoggingMonad<Integer> result = pipeline(LoggingMonad.unit(8),
         List.of(transform1, transform2));
-    System.out.println(result); // 输出为 LoggingMonad{value=16,
-logs=[8 * 4, 32 / 2]}
-  }
+        System.out.println(result); // 输出为 LoggingMonad{value=16, logs=[8 * 4, 32 / 2]}
+    }
 }
 ```
 
@@ -1252,24 +1199,21 @@ Reader Monad 也被称为 Environment Monad，描述的是依赖共享环境的�
 ```
 public class ReaderMonad {
 
-  public static <T, E> Function<E, T> unit(T value) {
-    return e -> value;
-  }
+    public static <T, E> Function<E, T> unit(T value) {
+        return e -> value;
+    }
 
-  public static <T1, T2, E> Function<E, T2> bind(Function<E, T1>
-input, Function<T1, Function<E, T2>> transform) {
-    return e -> transform.apply(input.apply(e)).apply(e);
-  }
+    public static <T1, T2, E> Function<E, T2> bind(Function<E, T1> input, Function<T1, Function<E, T2>> transform) {
+        return e -> transform.apply(input.apply(e)).apply(e);
+    }
 
-  public static void main(String[] args) {
-    Function<Environment, String> m1 = unit("Hello");
-    Function<Environment, String> m2 = bind(m1, value -> e ->
-e.getPrefix() + value);
-    Function<Environment, Integer> m3 = bind(m2, value -> e ->
-e.getBase() + value.length());
-    int result = m3.apply(new Environment());
-    System.out.println(result);
-  }
+    public static void main(String[] args) {
+        Function<Environment, String> m1 = unit("Hello");
+        Function<Environment, String> m2 = bind(m1, value -> e -> e.getPrefix() + value);
+        Function<Environment, Integer> m3 = bind(m2, value -> e -> e.getBase() + value.length());
+        int result = m3.apply(new Environment());
+        System.out.println(result);
+    }
 }
 ```
 
@@ -1279,13 +1223,13 @@ e.getBase() + value.length());
 ```
 public class Environment {
 
-  public String getPrefix() {
-    return "$$";
-  }
+    public String getPrefix() {
+        return "$$";
+    }
 
-  public int getBase() {
-    return 100;
-  }
+    public int getBase() {
+        return 100;
+    }
 }
 ```
 
@@ -1298,34 +1242,28 @@ State Monad 可以在计算中附加任意类型的状态值。State Monad 与 R
 ```
 public class StateMonad {
 
-  public static <T, S> Function<S, Tuple2<T, S>> unit(T value) {
-    return s -> Tuple.of(value, s);
-  }
+    public static <T, S> Function<S, Tuple2<T, S>> unit(T value) {
+        return s -> Tuple.of(value, s);
+    }
 
-  public static <T1, T2, S> Function<S, Tuple2<T2, S>>
-bind(Function<S, Tuple2<T1, S>> input,
-      Function<T1, Function<S, Tuple2<T2, S>>> transform) {
-    return s -> {
-      Tuple2<T1, S> result = input.apply(s);
-      return transform.apply(result._1).apply(result._2);
-    };
-  }
+    public static <T1, T2, S> Function<S, Tuple2<T2, S>> bind(Function<S, Tuple2<T1, S>> input,
+        Function<T1, Function<S, Tuple2<T2, S>>> transform) {
+        return s -> {
+            Tuple2<T1, S> result = input.apply(s);
+            return transform.apply(result._1).apply(result._2);
+        };
+    }
 
-  public static void main(String[] args) {
-    Function<String, Function<String, Function<State, Tuple2<String,
-State>>>> transform =
-        prefix -> value -> s -> Tuple
-            .of(prefix + value, new State(s.getValue() +
-value.length()));
+    public static void main(String[] args) {
+        Function<String, Function<String, Function<State, Tuple2<String, State>>>> transform =
+            prefix -> value -> s -> Tuple .of(prefix + value, new State(s.getValue() + value.length()));
 
-    Function<State, Tuple2<String, State>> m1 = unit("Hello");
-    Function<State, Tuple2<String, State>> m2 = bind(m1,
-transform.apply("1"));
-    Function<State, Tuple2<String, State>> m3 = bind(m2,
-transform.apply("2"));
-    Tuple2<String, State> result = m3.apply(new State(0));
-    System.out.println(result);
-  }
+        Function<State, Tuple2<String, State>> m1 = unit("Hello");
+        Function<State, Tuple2<String, State>> m2 = bind(m1, transform.apply("1"));
+        Function<State, Tuple2<String, State>> m3 = bind(m2, transform.apply("2"));
+        Tuple2<String, State> result = m3.apply(new State(0));
+        System.out.println(result);
+    }
 }
 ```
 
@@ -1335,22 +1273,22 @@ State Monad 中使用的状态对象如清单 11 所示。State 是一个包含�
 ```
 public class State {
 
-  private final int value;
+    private final int value;
 
-  public State(final int value) {
-    this.value = value;
-  }
+    public State(final int value) {
+        this.value = value;
+    }
 
-  public int getValue() {
-    return value;
-  }
+    public int getValue() {
+        return value;
+    }
 
-  @Override
-  public String toString() {
-    return "State{" +
-        "value=" + value +
-        '}';
-  }
+    @Override
+    public String toString() {
+        return "State{" +
+            "value=" + value +
+            '}';
+    }
 }
 ```
 
