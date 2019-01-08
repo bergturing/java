@@ -1,6 +1,8 @@
 深入理解java函数式编程(转载)
 =================
+[返回首页](../index.md)
 
+# 概述
 该文档是我在网上找到的管理Java函数式编程的一个系列文档，在拜读完之后，感觉非常棒，就扒了下来。
 
 文档的原文链接：[深入理解java函数编程](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-1/index.html)
@@ -9,7 +11,17 @@
 
 请大家尊重原著。
 
-# 1. [函数式编程思想概论](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-1/index.html)
+# 目录
+- [1、函数式编程思想概论](#1、函数式编程思想概论)
+- [2、函数式编程中的重要概念](#2、函数式编程中的重要概念)
+- [3、Java 8的Lambda表达式和流处理](#3、Java-8的Lambda表达式和流处理)
+- [4、使用Vavr进行函数式编程](#4、使用Vavr进行函数式编程)
+- [5、深入解析Monad](#5、深入解析Monad)
+
+# 1、函数式编程思想概论
+## 原文地址
+[函数式编程思想概论](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-1/index.html)
+
 ## 前言
 在讨论函数式编程（Functional Programming）的具体内容之前，我们首先看一下函数式编程的含义。在维基百科上，函数式编程的定义如下："函数式编程是一种编程范式。它把计算当成是数学函数的求值，从而避免改变状态和使用可变数据。它是一种声明式的编程范式，通过表达式和声明而不是语句来编程。" （见 Functional Programming）
 
@@ -141,10 +153,17 @@ int f4(int x) {
 - 查看斯坦福大学哲学百科中关于 λ 演算的[条目](https://plato.stanford.edu/entries/lambda-calculus/)。
 - 了解更多关于[函数](https://en.wikipedia.org/wiki/Function_(mathematics))的内容。
 
+[返回目录](#目录)
 
 
-# 2. [函数式编程中的重要概念](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-2/index.html)
-本系列的[上一篇](#ss)文章对函数式编程思想进行了概述，本文将系统地介绍函数式编程中的常见概念。这些概念对大多数开发人员来说可能并不陌生，在日常的编程实践中也比较常见。
+
+# 2、函数式编程中的重要概念
+## 原文地址
+[函数式编程中的重要概念](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-2/index.html)
+
+
+## 前言
+本系列的[上一篇](#1、函数式编程思想概论)文章对函数式编程思想进行了概述，本文将系统地介绍函数式编程中的常见概念。这些概念对大多数开发人员来说可能并不陌生，在日常的编程实践中也比较常见。
 
 ## 函数式编程范式的意义
 在众多的编程范式中，大多数开发人员比较熟悉的是面向对象编程范式。一方面是由于面向对象编程语言比较流行，与之相关的资源比较丰富；另外一方面是由于大部分学校和培训机构的课程设置，都选择流行的面向对象编程语言。面向对象编程范式的优点在于其抽象方式与现实中的概念比较相近。比如，学生、课程、汽车和订单等这些现实中的概念，在抽象成相应的类之后，我们很容易就能理解类之间的关联关系。这些类中所包含的属性和方法可以很直观地设计出来。举例来说，学生所对应的类 Student 就应该有姓名、出生日期和性别等基本的属性，有方法可以获取到学生的年龄、所在的班级等信息。使用面向对象的编程思想，可以直观地在程序要处理的问题和程序本身之间，建立直接的对应关系。这种从问题域到解决域的简单对应关系，使得代码的可读性很强。对于初学者来说，这极大地降低了上手的难度。
@@ -319,7 +338,7 @@ genId(); // 1
 闭包的一个重要特性是其中的自由变量所绑定的是闭包创建时的值，而不是变量的当前值。清单 9 是一个简单的 HTML 页面的代码，其中有 3 个按钮。用浏览器打开该页面时，点击 3 个按钮会发现，所弹出的值全部都是 3。这是因为当点击按钮时，循环已经执行完成，i 的当前值已经是 3。所以按钮的 click 事件处理函数所得到是 i 的当前值 3。
 
 清单 9. 闭包绑定值的演示页面
-```
+```h't'm'l
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -511,9 +530,15 @@ public class FibMemoized {
 - 了解更多关于[递归](https://en.wikipedia.org/wiki/Recursion_(computer_science))的内容。
 - 了解更多关于[记忆化](https://en.wikipedia.org/wiki/Memoization)的内容。
 
+[返回目录](#目录)
 
 
-# 3. [Java 8的Lambda表达式和流处理](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-3/index.html)
+
+# 3、Java 8的Lambda表达式和流处理
+## 原文地址
+[Java 8的Lambda表达式和流处理](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-3/index.html)
+
+## 前言
 在本系列的前两篇文章中，已经对函数式编程的思想和函数式编程的重要概念做了介绍。本文将介绍 Java 平台本身对函数式编程的支持，着重介绍 Lambda 表达式和流（Stream）。
 
 ## Lambda 表达式
@@ -780,9 +805,15 @@ Java 8 引入的 Lambda 表达式和流处理是可以极大提高开发效率�
 - 查看 JDK 10 中 [Stream](https://docs.oracle.com/javase/10/docs/api/java/util/stream/Stream.html) 的相关文档 。
 - 查看 JDK 10 中的 [Spliterator](https://docs.oracle.com/javase/10/docs/api/java/util/Spliterator.html) 相关文档 。
 
+[返回目录](#目录)
 
 
-# 4. [使用Vavr进行函数式编程](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-4/index.html)
+
+# 4、使用Vavr进行函数式编程
+## 原文地址
+[使用Vavr进行函数式编程](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-4/index.html)
+
+## 前言
 在本系列的上一篇文章中对 Java 平台提供的 Lambda 表达式和流做了介绍。受限于 Java 标准库的通用性要求和二进制文件大小，Java 标准库对函数式编程的 API 支持相对比较有限。函数的声明只提供了 Function 和 BiFunction 两种，流上所支持的操作的数量也较少。为了更好地进行函数式编程，我们需要第三方库的支持。Vavr 是 Java 平台上函数式编程库中的佼佼者。
 
 Vavr 这个名字对很多开发人员可能比较陌生。它的前身 Javaslang 可能更为大家所熟悉。Vavr 作为一个标准的 Java 库，使用起来很简单。只需要添加对 io.vavr:vavr 库的 Maven 依赖即可。Vavr 需要 Java 8 及以上版本的支持。本文基于 Vavr 0.9.2 版本，示例代码基于 Java 10。
@@ -1022,9 +1053,15 @@ Match(value).of(
 - 参考 Vavr 的 [官方文档](http://www.vavr.io/vavr-docs/) 。
 - 查看 Vavr 的 [Java API 文档](http://www.javadoc.io/doc/io.vavr/vavr/0.9.2) 。
 
+[返回目录](#目录)
 
 
-# 5. [深入解析Monad](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-5/index.html)
+
+# 5、深入解析Monad
+## 原文地址
+[深入解析Monad](https://www.ibm.com/developerworks/cn/java/j-understanding-functional-programming-5/index.html)
+
+## 前言
 在本系列的前四篇文章中对函数式编程进行了多方位的介绍。本文将着重介绍函数式编程中一个重要而又复杂的概念：Monad。一直以来，Monad 都是函数式编程中最具有神秘色彩的概念。正如 JSON 格式的提出者 Douglas Crockford 所指出的，Monad 有一种魔咒，一旦你真正理解了它的意义，就失去了解释给其他人的能力。本文尝试深入解析 Monad 这一概念。由于 Monad 的概念会涉及到一些数学理论，可能读起来会比较枯燥。本文侧重在 Monad 与编程相关的方面，并结合 Java 示例代码来进行说明。
 
 ## 范畴论
@@ -1304,3 +1341,5 @@ public class State {
 - 了解更多关于 [Monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)) 的内容。
 - 了解 Java 中的 [Functor 和 Monad](https://dzone.com/articles/functor-and-monad-examples-in-plain-java) 。
 - 了解 Haskell 中的更多 [Monad](http://learnyouahaskell.com/for-a-few-monads-more) 类型。
+
+[返回目录](#目录)
