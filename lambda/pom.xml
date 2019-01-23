@@ -8,8 +8,15 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>lambda</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>lambda</name>
     <description>java拉姆达表达式相关的模块</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.bergturing.java</groupId>
+            <artifactId>parent</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
