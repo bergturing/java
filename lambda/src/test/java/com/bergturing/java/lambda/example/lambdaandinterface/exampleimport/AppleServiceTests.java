@@ -41,7 +41,7 @@ public class AppleServiceTests extends LambdaApplicationTests {
         }
 
         //打印结果
-        OutputUtils.debugList(logger, redApples);
+        OutputUtils.debugList(logger, redApples, Apple::getColor);
     }
 
     /**
@@ -58,8 +58,8 @@ public class AppleServiceTests extends LambdaApplicationTests {
         List<Apple> greenApples = this.appleFilter(apples, "green");
 
         //打印结果
-        OutputUtils.debugList(logger, redApples);
-        OutputUtils.debugList(logger, greenApples);
+        OutputUtils.debugList(logger, redApples, Apple::getColor);
+        OutputUtils.debugList(logger, greenApples, Apple::getColor);
     }
 
     /**

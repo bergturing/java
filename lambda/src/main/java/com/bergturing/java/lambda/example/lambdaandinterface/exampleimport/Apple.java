@@ -30,9 +30,6 @@ public class Apple {
 
     @Override
     public String toString() {
-        return "Apple{" +
-                "color='" + color + '\'' +
-                ", weight=" + weight +
-                '}';
+        return this.color + "-" + this.weight;
     }
 }

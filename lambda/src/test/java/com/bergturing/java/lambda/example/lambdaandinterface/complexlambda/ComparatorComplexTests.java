@@ -42,13 +42,13 @@ public class ComparatorComplexTests extends LambdaApplicationTests {
         Comparator<Apple> comparator = Comparator.comparing(Apple::getWeight);
 
         logger.debug("before sort：");
-        OutputUtils.debugList(logger, apples);
+        OutputUtils.debugList(logger, apples, Apple::getWeight);
 
         //排序
         apples.sort(comparator);
 
         logger.debug("after sort：");
-        OutputUtils.debugList(logger, apples);
+        OutputUtils.debugList(logger, apples, Apple::getWeight);
     }
 
     /**
@@ -66,7 +66,7 @@ public class ComparatorComplexTests extends LambdaApplicationTests {
         apples.sort(comparator.reversed());
 
         logger.debug("after sort：");
-        OutputUtils.debugList(logger, apples);
+        OutputUtils.debugList(logger, apples, Apple::getWeight);
     }
 
     /**
